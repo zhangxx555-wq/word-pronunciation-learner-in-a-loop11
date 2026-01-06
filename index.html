@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词发音学习器 - 完整版</title>
+    
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .input-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        /* 移动端输入优化 */
+        @media (max-width: 768px) {
+            input, select {
+                font-size: 18px;
+                padding: 16px;
+            }
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-test {
+            background: #9b59b6;
+        }
+        
+        .btn-test:hover {
+            background: #8e44ad;
+        }
+        
+        .btn-import {
+            background: #FF9800;
+        }
+        
+        .btn-backup {
+            background: #9C27B0;
+        }
+        
+        .btn-sequence {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .btn-pause {
+            background: #f39c12;
+        }
+        
+        .btn-stop {
+            background: #e74c3c;
+        }
+        
+        .table-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #2c3e50;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #ecf0f1;
+        }
+        
+        th {
+            padding: 16px 12px;
+            text-align: left;
+            color: #2c3e50;
+            font-weight: bold;
+            border-bottom: 2px solid #bdc3c7;
+        }
+        
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #ecf0f1;
+            vertical-align: top;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .word-cell {
+            color: #3498db;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 8px 0;
+        }
+        
+        .word-cell:hover {
+            text-decoration: underline;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0 6px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #f1f1f1;
+            transform: scale(1.1);
+        }
+        
+        .play-btn {
+            color: #3498db;
+        }
+        
+        .sequence-btn {
+            color: #00b09b;
+        }
+        
+        .delete-btn {
+            color: #95a5a6;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ecc71;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            font-size: 15px;
+            text-align: center;
+        }
+        
+        .sequence-controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid #e3f2fd;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .current-playing {
+            background-color: #e8f4fc !important;
+            animation: highlight 2s ease-in-out;
+        }
+        
+        @keyframes highlight {
+            0% { background-color: #e8f4fc; }
+            50% { background-color: #d4eaf7; }
+            100% { background-color: #e8f4fc; }
+        }
+        
+        .empty-table {
+            text-align: center;
+            padding: 50px 20px;
+            color: #95a5a6;
+        }
+        
+        .empty-table i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                min-height: 50px;
+            }
+        }
+        
+        .settings-group {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f7ff;
+            border-radius: 10px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .setting-item input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .setting-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+    
+    <!-- Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container" id="mainContent">
+        <header>
+            <h1><i class="fas fa-volume-up"></i> 单词发音学习器</h1>
+            <p class="subtitle">输入单词 → 自动发音 → 顺序学习 | GitHub Pages版</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- 左侧：输入和控制区域 -->
+            <div class="input-section">
+                <h2><i class="fas fa-plus-circle"></i> 添加新单词</h2>
+                
+                <div class="input-group">
+                    <label for="wordInput"><i class="fas fa-font"></i> 单词/句子</label>
+                    <input type="text" id="wordInput" placeholder="输入你想学习的单词或句子" autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label for="meaningInput"><i class="fas fa-language"></i> 释义（可选）</label>
+                    <input type="text" id="meaningInput" placeholder="例如：苹果" autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label for="languageSelect"><i class="fas fa-globe"></i> 选择语言</label>
+                    <select id="languageSelect">
+                        <option value="en-US">英语 (美式)</option>
+                        <option value="en-GB">英语 (英式)</option>
+                        <option value="zh-CN">中文 (普通话)</option>
+                        <option value="ja-JP">日语</option>
+                        <option value="ko-KR">韩语</option>
+                        <option value="fr-FR">法语</option>
+                        <option value="de-DE">德语</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success" onclick="addWord()">
+                    <i class="fas fa-plus"></i> 添加到单词表
+                </button>
+                
+                <button class="btn btn-test" onclick="testPronunciation()">
+                    <i class="fas fa-play"></i> 试听发音
+                </button>
+                
+                <button class="btn btn-danger" onclick="clearAllWords()">
+                    <i class="fas fa-trash"></i> 清空单词表
+                </button>
+                
+                <button class="btn btn-import" onclick="importData()">
+                    <i class="fas fa-file-import"></i> 导入数据
+                </button>
+                
+                <button class="btn btn-backup" onclick="exportData()">
+                    <i class="fas fa-download"></i> 导出数据
+                </button>
+                
+                <!-- 顺序播放控制区域 -->
+                <div class="sequence-controls">
+                    <h3><i class="fas fa-list-ol"></i> 顺序播放控制</h3>
+                    
+                    <div id="progressContainer" class="progress-container" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="currentWordInfo">准备中...</span>
+                            <span id="progressText">0/0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button class="btn btn-sequence" onclick="startSequencePlay()" id="startBtn">
+                            <i class="fas fa-play-circle"></i> 开始顺序播放
+                        </button>
+                        
+                        <button class="btn btn-pause" onclick="togglePause()" id="pauseBtn" style="display: none;">
+                            <i class="fas fa-pause"></i> 暂停
+                        </button>
+                        
+                        <button class="btn btn-stop" onclick="stopSequencePlay()" id="stopBtn" style="display: none;">
+                            <i class="fas fa-stop"></i> 停止
+                        </button>
+                    </div>
+                    
+                    <!-- 播放设置 -->
+                    <div class="settings-group">
+                        <h4><i class="fas fa-cog"></i> 播放设置</h4>
+                        
+                        <div class="setting-item">
+                            <span>自动播放释义：</span>
+                            <input type="checkbox" id="autoPlayMeaning" checked>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span>播放间隔（秒）：</span>
+                            <input type="number" id="playInterval" value="2" min="1" max="5">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <span>播放速度：</span>
+                            <select id="playSpeed">
+                                <option value="0.7">慢速</option>
+                                <option value="0.8">稍慢</option>
+                                <option value="1.0" selected>正常</option>
+                                <option value="1.2">稍快</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：单词表格区域 -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h2><i class="fas fa-list"></i> 单词表 (<span id="wordCount">0</span>个单词)</h2>
+                    <button class="btn btn-sequence" onclick="startSequencePlay()" style="padding: 8px 16px; width: auto;">
+                        <i class="fas fa-play-circle"></i> 顺序播放
+                    </button>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table id="wordTable">
+                        <thead>
+                            <tr>
+                                <th width="30%">单词</th>
+                                <th width="35%">释义</th>
+                                <th width="35%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wordList">
+                            <!-- 单词会动态添加到这里 -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="emptyMessage" class="empty-table">
+                        <i class="fas fa-book-open"></i>
+                        <h3>单词表是空的</h3>
+                        <p>请在左侧添加你的第一个单词</p>
+                        <button class="btn btn-success" onclick="addExampleWords()" style="width: auto; margin-top: 15px;">
+                            <i class="fas fa-magic"></i> 添加示例单词
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar" id="statusBar"></div>
+
+    <script>
+        // ==================== 核心变量 ====================
+        let wordList = [];
+        let currentPlayIndex = 0;
+        let isPlaying = false;
+        let isPaused = false;
+        const STORAGE_KEY = 'word_pronunciation_learner_v2';
+        
+        // ==================== 页面初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWords();
+            showStatus('页面加载完成！', 'success');
+            
+            // 加载设置
+            const settings = JSON.parse(localStorage.getItem('word_learner_settings') || '{}');
+            if (settings.interval) document.getElementById('playInterval').value = settings.interval;
+            if (settings.speed) document.getElementById('playSpeed').value = settings.speed;
+            if (settings.autoPlayMeaning !== undefined) {
+                document.getElementById('autoPlayMeaning').checked = settings.autoPlayMeaning;
+            }
+            
+            // 输入框回车快捷键
+            document.getElementById('wordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (e.ctrlKey) {
+                        addWord();
+                    } else {
+                        testPronunciation();
+                    }
+                }
+            });
+        });
+        
+        // ==================== 单词管理 ====================
+        function addWord() {
+            const wordInput = document.getElementById('wordInput');
+            const meaningInput = document.getElementById('meaningInput');
+            const languageSelect = document.getElementById('languageSelect');
+            
+            const word = wordInput.value.trim();
+            const meaning = meaningInput.value.trim();
+            const language = languageSelect.value;
+            
+            if (!word) {
+                showStatus('请输入单词！', 'error');
+                wordInput.focus();
+                return;
+            }
+            
+            const newWord = {
+                id: Date.now() + Math.random(),
+                word: word,
+                meaning: meaning || '—',
+                language: language,
+                date: new Date().toLocaleDateString('zh-CN')
+            };
+            
+            wordList.push(newWord);
+            renderWordTable();
+            
+            // 清空输入框
+            wordInput.value = '';
+            meaningInput.value = '';
+            wordInput.focus();
+            
+            showStatus('✅ 单词已添加！', 'success');
+            saveWords();
+        }
+        
+        function renderWordTable() {
+            const tbody = document.getElementById('wordList');
+            const emptyMessage = document.getElementById('emptyMessage');
+            
+            if (wordList.length === 0) {
+                tbody.innerHTML = '';
+                emptyMessage.style.display = 'block';
+                updateWordCount();
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            tbody.innerHTML = '';
+            
+            wordList.forEach((word, index) => {
+                const row = document.createElement('tr');
+                row.id = `word-row-${word.id}`;
+                
+                // 单词列
+                const wordCell = document.createElement('td');
+                wordCell.innerHTML = `
+                    <div class="word-cell" onclick="speakWord('${word.word}', '${word.language}')">
+                        <i class="fas fa-volume-up"></i> ${word.word}
+                    </div>
+                    <div style="font-size: 12px; color: #95a5a6; margin-top: 5px;">
+                        ${word.language} | ${word.date}
+                    </div>
+                `;
+                
+                // 释义列
+                const meaningCell = document.createElement('td');
+                meaningCell.textContent = word.meaning;
+                
+                // 操作列
+                const actionCell = document.createElement('td');
+                actionCell.innerHTML = `
+                    <button class="action-btn play-btn" onclick="speakWord('${word.word.replace(/'/g, "\\'")}', '${word.language}')" title="发音">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="action-btn sequence-btn" onclick="playWordWithMeaning(${index})" title="播放单词+释义">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteWord(${word.id})" title="删除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                row.appendChild(wordCell);
+                row.appendChild(meaningCell);
+                row.appendChild(actionCell);
+                tbody.appendChild(row);
+            });
+            
+            updateWordCount();
+        }
+        
+        function deleteWord(id) {
+            if (confirm('确定要删除这个单词吗？')) {
+                const index = wordList.findIndex(w => w.id === id);
+                if (index !== -1) {
+                    wordList.splice(index, 1);
+                    renderWordTable();
+                    saveWords();
+                    showStatus('单词已删除', 'info');
+                }
+            }
+        }
+        
+        function clearAllWords() {
+            if (wordList.length === 0) {
+                showStatus('单词表已经是空的', 'info');
+                return;
+            }
+            
+            if (confirm(`确定要清空所有 ${wordList.length} 个单词吗？此操作不可撤销！`)) {
+                if (isPlaying) stopSequencePlay();
+                wordList = [];
+                renderWordTable();
+                saveWords();
+                showStatus('已清空所有单词', 'info');
+            }
+        }
+        
+        function updateWordCount() {
+            document.getElementById('wordCount').textContent = wordList.length;
+        }
+        
+        // ==================== 发音功能 ====================
+        function speakWord(text, language) {
+            if (!('speechSynthesis' in window)) {
+                showStatus('您的浏览器不支持语音合成', 'error');
+                return;
+            }
+            
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = language;
+            utterance.rate = parseFloat(document.getElementById('playSpeed').value);
+            utterance.volume = 1.0;
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        function testPronunciation() {
+            const wordInput = document.getElementById('wordInput');
+            const languageSelect = document.getElementById('languageSelect');
+            
+            const word = wordInput.value.trim();
+            if (!word) {
+                showStatus('请输入要试听的单词', 'error');
+                return;
+            }
+            
+            speakWord(word, languageSelect.value);
+        }
+        
+        // ==================== 顺序播放功能 ====================
+        function startSequencePlay() {
+            if (wordList.length === 0) {
+                showStatus('单词表是空的，请先添加单词', 'error');
+                return;
+            }
+            
+            if (isPlaying && !isPaused) {
+                showStatus('已经在播放中', 'info');
+                return;
+            }
+            
+            if (isPaused) {
+                // 恢复播放
+                isPaused = false;
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                showStatus('继续播放...', 'info');
+                playNextWord();
+                return;
+            }
+            
+            // 开始新的顺序播放
+            isPlaying = true;
+            isPaused = false;
+            currentPlayIndex = 0;
+            
+            // 保存设置
+            saveSettings();
+            
+            // 更新界面
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'flex';
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            // 清除高亮
+            clearHighlights();
+            
+            // 开始播放
+            playNextWord();
+        }
+        
+        function playNextWord() {
+            if (!isPlaying || isPaused || currentPlayIndex >= wordList.length) {
+                if (currentPlayIndex >= wordList.length) {
+                    // 播放完成
+                    stopSequencePlay();
+                    showStatus('🎉 顺序播放完成！', 'success');
+                }
+                return;
+            }
+            
+            const word = wordList[currentPlayIndex];
+            
+            // 更新进度
+            updateProgress();
+            
+            // 高亮当前单词
+            highlightCurrentWord(word.id);
+            
+            // 播放当前单词
+            playCurrentWord(word);
+            
+            currentPlayIndex++;
+        }
+        
+        function playCurrentWord(word) {
+            const autoPlayMeaning = document.getElementById('autoPlayMeaning').checked;
+            
+            // 播放单词
+            speakWord(word.word, word.language);
+            
+            // 监听播放完成
+            let utteranceCompleted = false;
+            
+            // 检查发音状态
+            const checkInterval = setInterval(() => {
+                if (!speechSynthesis.speaking && utteranceCompleted) {
+                    clearInterval(checkInterval);
+                    
+                    if (autoPlayMeaning && word.meaning !== '—') {
+                        // 播放释义
+                        setTimeout(() => {
+                            speakWord(word.meaning, 'zh-CN');
+                            
+                            // 监听释义播放完成
+                            const checkMeaningInterval = setInterval(() => {
+                                if (!speechSynthesis.speaking) {
+                                    clearInterval(checkMeaningInterval);
+                                    // 继续下一个单词
+                                    setTimeout(() => {
+                                        playNextWord();
+                                    }, getPlayInterval());
+                                }
+                            }, 100);
+                        }, 500);
+                    } else {
+                        // 继续下一个单词
+                        setTimeout(() => {
+                            playNextWord();
+                        }, getPlayInterval());
+                    }
+                }
+            }, 100);
+            
+            // 设置超时防止卡住
+            setTimeout(() => {
+                if (!utteranceCompleted) {
+                    utteranceCompleted = true;
+                }
+            }, 5000);
+            
+            // 标记播放开始
+            setTimeout(() => {
+                utteranceCompleted = true;
+            }, 300);
+        }
+        
+        function playWordWithMeaning(index) {
+            if (index < 0 || index >= wordList.length) return;
+            
+            const word = wordList[index];
+            speakWord(word.word, word.language);
+            
+            setTimeout(() => {
+                if (!speechSynthesis.speaking && word.meaning !== '—') {
+                    speakWord(word.meaning, 'zh-CN');
+                }
+            }, 1000);
+        }
+        
+        function togglePause() {
+            if (!isPlaying) return;
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-play"></i> 继续';
+                showStatus('播放已暂停', 'info');
+                
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                }
+            } else {
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                showStatus('继续播放...', 'info');
+                playNextWord();
+            }
+        }
+        
+        function stopSequencePlay() {
+            isPlaying = false;
+            isPaused = false;
+            currentPlayIndex = 0;
+            
+            // 停止发音
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            // 恢复界面
+            document.getElementById('startBtn').style.display = 'flex';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+            
+            // 清除高亮
+            clearHighlights();
+            
+            // 重置进度
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('currentWordInfo').textContent = '准备中...';
+            document.getElementById('progressText').textContent = '0/0';
+            
+            showStatus('顺序播放已停止', 'info');
+        }
+        
+        function updateProgress() {
+            const progress = (currentPlayIndex / wordList.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            if (currentPlayIndex < wordList.length) {
+                const word = wordList[currentPlayIndex];
+                document.getElementById('currentWordInfo').textContent = 
+                    `${word.word} (${word.language})`;
+            }
+            
+            document.getElementById('progressText').textContent = 
+                `${currentPlayIndex + 1}/${wordList.length}`;
+        }
+        
+        function highlightCurrentWord(id) {
+            clearHighlights();
+            const row = document.getElementById(`word-row-${id}`);
+            if (row) {
+                row.classList.add('current-playing');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        function clearHighlights() {
+            document.querySelectorAll('tr').forEach(row => {
+                row.classList.remove('current-playing');
+            });
+        }
+        
+        function getPlayInterval() {
+            return parseInt(document.getElementById('playInterval').value) * 1000;
+        }
+        
+        // ==================== 数据存储 ====================
+        function saveWords() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(wordList));
+            } catch (error) {
+                console.error('保存失败:', error);
+            }
+        }
+        
+        function loadWords() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    wordList = JSON.parse(saved);
+                    renderWordTable();
+                }
+            } catch (error) {
+                console.error('加载失败:', error);
+                wordList = [];
+            }
+        }
+        
+        function saveSettings() {
+            const settings = {
+                interval: document.getElementById('playInterval').value,
+                speed: document.getElementById('playSpeed').value,
+                autoPlayMeaning: document.getElementById('autoPlayMeaning').checked,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem('word_learner_settings', JSON.stringify(settings));
+        }
+        
+        // ==================== 导入导出 ====================
+        function exportData() {
+            if (wordList.length === 0) {
+                showStatus('没有数据可以导出', 'error');
+                return;
+            }
+            
+            const data = {
+                version: '2.0',
+                exportedAt: new Date().toISOString(),
+                wordCount: wordList.length,
+                words: wordList
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `单词表_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            showStatus('✅ 数据已导出', 'success');
+        }
+        
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        let importedWords = [];
+                        
+                        if (Array.isArray(importedData)) {
+                            importedWords = importedData;
+                        } else if (importedData.words && Array.isArray(importedData.words)) {
+                            importedWords = importedData.words;
+                        }
+                        
+                        if (importedWords.length === 0) {
+                            throw new Error('没有找到有效的单词数据');
+                        }
+                        
+                        const shouldMerge = wordList.length > 0 && 
+                            confirm(`找到 ${importedWords.length} 个单词\n\n选择：\n确定 = 覆盖现有数据\n取消 = 合并到现有数据`);
+                        
+                        if (shouldMerge) {
+                            // 合并
+                            const existingWords = new Set(wordList.map(w => w.word.toLowerCase()));
+                            const newWords = importedWords.filter(w => 
+                                w.word && !existingWords.has(w.word.toLowerCase())
+                            );
+                            wordList = wordList.concat(newWords);
+                            showStatus(`✅ 已合并 ${newWords.length} 个新单词`, 'success');
+                        } else {
+                            // 覆盖
+                            wordList = importedWords;
+                            showStatus(`✅ 已导入 ${wordList.length} 个单词`, 'success');
+                        }
+                        
+                        saveWords();
+                        renderWordTable();
+                        
+                    } catch (error) {
+                        showStatus(`导入失败: ${error.message}`, 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // ==================== 示例数据 ====================
+        function addExampleWords() {
+            const examples = [
+                { word: 'Hello', meaning: '你好', language: 'en-US' },
+                { word: 'Good morning', meaning: '早上好', language: 'en-US' },
+                { word: 'Thank you', meaning: '谢谢你', language: 'en-US' },
+                { word: '你好', meaning: 'Hello', language: 'zh-CN' },
+                { word: '谢谢', meaning: 'Thank you', language: 'zh-CN' },
+                { word: 'こんにちは', meaning: '你好', language: 'ja-JP' }
+            ];
+            
+            examples.forEach(example => {
+                wordList.push({
+                    id: Date.now() + Math.random(),
+                    word: example.word,
+                    meaning: example.meaning,
+                    language: example.language,
+                    date: new Date().toLocaleDateString('zh-CN')
+                });
+            });
+            
+            renderWordTable();
+            saveWords();
+            showStatus('已添加示例单词，点击试听！', 'success');
+        }
+        
+        // ==================== 工具函数 ====================
+        function showStatus(message, type = 'info') {
+            const statusBar = document.getElementById('statusBar');
+            
+            statusBar.textContent = message;
+            statusBar.style.display = 'block';
+            
+            const colors = {
+                success: '#2ecc71',
+                error: '#e74c3c',
+                info: '#3498db',
+                warning: '#f39c12'
+            };
+            statusBar.style.background = colors[type] || colors.info;
+            
+            setTimeout(() => {
+                statusBar.style.display = 'none';
+            }, 3000);
+        }
+        
+        // ==================== 键盘快捷键 ====================
+        document.addEventListener('keydown', function(e) {
+            // 空格键停止发音
+            if (e.key === ' ' && !e.target.matches('input, textarea, button')) {
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                    showStatus('发音已停止', 'info');
+                }
+                e.preventDefault();
+            }
+            
+            // Ctrl+P 开始顺序播放
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                startSequencePlay();
+            }
+            
+            // Ctrl+S 停止顺序播放
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                stopSequencePlay();
+            }
+            
+            // Ctrl+E 导出数据
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportData();
+            }
+        });
+    </script>
+</body>
+</html>
